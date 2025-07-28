@@ -2,12 +2,12 @@ const user = require("../models/userModel");
 const bcrypt = require("bcryptjs");
 const { response } = require("express");
 const jwt = require("jsonwebtoken");
-const mangoose = require("mangoose");
+const User = require("../models/userModel");
 
 
 const register = async(req , res) => {
     try{
-  const  {username , password, role}= req.body ;
+      const  {username , password, role}= req.body ;
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = new UserActivation({username,password:hashedPassword, role});
     await newUser.save();
