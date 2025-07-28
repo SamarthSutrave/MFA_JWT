@@ -2,6 +2,7 @@ const user = require("../models/userModel");
 const bcrypt = require("bcryptjs");
 const { response } = require("express");
 const jwt = require("jsonwebtoken");
+const mangoose = require("mangoose");
 
 
 const register = async(req , res) => {
@@ -24,8 +25,14 @@ const login =async(req, res) =>{
     const user = await UserActivation.findone({username});
 
     if(!user){
-
+        return res.status(404).json({message: `User with username ${username} not found `});
     }
+    const isMatch = await bcrypt.compare(password , user.password);
+    if(!isMatch){
+        return register.status(400).json({message: `invalid cridentail`});
+    }
+    const token =jwt.sign({id :user.id, role:user.role }, process.env.JWT_SECRET,{expiresIn: "1h"});
+    res.status(200).json({token});
     }catch(err){
         res.status(500).json({message: `user registered with username ${username}`});
     }
